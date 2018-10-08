@@ -184,6 +184,12 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 		cout<<node->key[i]<<endl;
 	}
 
+
+	cout<<"print node' keys"<<endl;
+	for(int i=0;i<node_dash->nkey;i++){
+		cout<<node_dash->key[i]<<endl;
+	}
+
 	cout<<"print parent node keys"<<endl;
 	for(int i=0;i<parent->nkey;i++){
 		cout<<parent->key[i]<<endl;
@@ -257,12 +263,14 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 			pp->nkey++;
 		}
 		assert((pp->nkey+mid_pos+1)==t->nkey);
-
+		assert(i==4);
 		pp->chi[i-(mid_pos+1)]=t->chi[i];
 
 
-		NODE * ppp=parent->parent;
-		if(ppp)assert(ppp->nkey<=N-1);
+		//親のポインタを指定
+		node->parent=pp;
+		node_dash->parent=pp;
+
 		return insert_in_parent(parent,key_temp,pp,data);
 
 	}
@@ -299,7 +307,7 @@ insert_in_leaf_temp(TEMP *leaf,int key,DATA *data){
 	}
 	leaf->nkey++;
 
-	std::cout<<"leafのnkeyを出力"<<leaf->nkey<<endl;
+	std::cout<<"leaf_tempのnkeyを出力"<<leaf->nkey<<endl;
 	for(int i=0;i<leaf->nkey;i++){
 		std::cout<<leaf->key[i]<<endl;
 	}
