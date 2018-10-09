@@ -23,7 +23,6 @@ print_tree(NODE *node)
 }
 
 
-
 //insertの時のようのノード生成
 TEMP *
 create_new_node(){
@@ -170,37 +169,14 @@ insert_in_node_temp(TEMP *p,NODE *c,int key,int index){
 NODE *
 insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 	if (node==Root){
-		cout<<"root"<<endl;
 		return Root=alloc_root(node,key,node_dash);
 	}
 
-	cout<<"ここまできてる"<<endl;
-
-
 	NODE *parent=node->parent;
 
-	cout<<"print node keys"<<endl;
-	for(int i=0;i<node->nkey;i++){
-		cout<<node->key[i]<<endl;
-	}
-
-
-	cout<<"print node' keys"<<endl;
-	for(int i=0;i<node_dash->nkey;i++){
-		cout<<node_dash->key[i]<<endl;
-	}
-
-	cout<<"print parent node keys"<<endl;
-	for(int i=0;i<parent->nkey;i++){
-		cout<<parent->key[i]<<endl;
-	}
-
 	int index=0,i;
-	cout<<"親のキーの数"<<parent->nkey<<endl;
 
 	while(parent->key[index]<key && index<parent->nkey)index++;
-	dump(index);
-	cout<<"親のキーの数"<<parent->nkey<<endl;
 
 	if(parent->nkey<N-1){
 		insert_in_node(parent,node_dash,key,index);
@@ -219,12 +195,10 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 		}
 		assert(parent->nkey==t->nkey);
 		t->chi[i]=parent->chi[i];
-		dump(t->nkey);
-		dump(index);
+
 
 		//insert
 		insert_in_node_temp(t,node_dash,key,index);
-		dump(t->nkey);
 		assert((parent->nkey+1==t->nkey));
 
 		int mid_pos=(N+1)/2;
@@ -245,15 +219,12 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 			parent->key[i]=t->key[i];
 			parent->chi[i]=t->chi[i];
 			parent->nkey++;
-			dump(t->key[i]);
 		}
-		dump(parent->nkey);
 		assert(parent->nkey==mid_pos);
 		parent->chi[i]=t->chi[i];
 
 		//let k'' = t[mid_pos]
 		int key_temp=t->key[mid_pos];
-		dump(key_temp);
 		//copy t into p' right
 		for(i=mid_pos+1;i<t->nkey;i++){
 			pp->chi[i-(mid_pos+1)]=t->chi[i];
@@ -307,12 +278,6 @@ insert_in_leaf_temp(TEMP *leaf,int key,DATA *data){
 	}
 	leaf->nkey++;
 
-	std::cout<<"leaf_tempのnkeyを出力"<<leaf->nkey<<endl;
-	for(int i=0;i<leaf->nkey;i++){
-		std::cout<<leaf->key[i]<<endl;
-	}
-
-
 	return leaf;
 
 }
@@ -353,7 +318,6 @@ insert_in_leaf(NODE *leaf, int key, DATA *data)
 	return leaf;
 }
 
-//
 
 void
 insert(int key, DATA *data)
@@ -381,13 +345,6 @@ insert(int key, DATA *data)
 			Temp->nkey++;
 		}
 		//std::cout<<"key="<<key<<endl;
-
-		std::cout<<"Tempのnkeyを出力"<<Temp->nkey<<endl;
-		for(int i=0;i<Temp->nkey;i++){
-			std::cout<<Temp->key[i]<<endl;
-		}
-
-		std::cout<<"~~~~~~~~~~~~~~~~~~"<<std::endl;
 		//insert
 		insert_in_leaf_temp(Temp,key,data);
 
@@ -412,14 +369,11 @@ insert(int key, DATA *data)
 		}
 		for(int i=mid_pos+1;i<N;i++){
 			leaf_dash->key[i-(mid_pos+1)]=Temp->key[i];
-			cout<<"分割ノードの右"<<leaf_dash->key[i-(mid_pos+1)]<<endl;
 			leaf_dash->chi[i-(mid_pos+1)]=Temp->chi[i];
 			leaf_dash->nkey++;
 		}
 
 		int key_dash=leaf_dash->key[0];
-
-		cout<<"key_dash="<<key_dash<<endl;
 
 
 		insert_in_parent(leaf,key_dash,leaf_dash,data);
