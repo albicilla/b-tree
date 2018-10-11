@@ -148,6 +148,11 @@ insert_in_node(NODE *p,NODE *c,int key,int index){
 	p->nkey+=1;
 	c->parent=p;
 
+	cout<<"insert_in_node"<<endl;
+	for(int i=0;i<p->nkey;i++){
+		cout<<p->key[i]<<endl;
+	}
+
 	return p;
 }
 TEMP *
@@ -172,13 +177,32 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 		return Root=alloc_root(node,key,node_dash);
 	}
 
+
+	cout<<"node key"<<endl;
+	for(int i=0;i<node->nkey;i++){
+		cout<<node->key[i]<<endl;
+	}
+	cout<<"node_dash key"<<endl;
+	for(int i=0;i<node_dash->nkey;i++){
+		cout<<node_dash->key[i]<<endl;
+	}
+
 	NODE *parent=node->parent;
+
+	cout<<"node parent key"<<endl;
+	for(int i=0;i<parent->nkey;i++){
+		cout<<parent->key[i]<<endl;
+	}
 
 	int index=0,i;
 
 	while(parent->key[index]<key && index<parent->nkey)index++;
 
 	if(parent->nkey<N-1){
+		cout<<"parent->nkey<N-1 の"<<endl;
+		for(int i=0;i<parent->nkey;i++){
+			cout<<parent->key[i]<<endl;
+		}
 		insert_in_node(parent,node_dash,key,index);
 		return Root;
 	}else{
@@ -225,6 +249,8 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 
 		//let k'' = t[mid_pos]
 		int key_temp=t->key[mid_pos];
+		cout<<"key_tempの値"<<endl;
+		cout<<key_temp<<endl;
 		//copy t into p' right
 		for(i=mid_pos+1;i<t->nkey;i++){
 			pp->chi[i-(mid_pos+1)]=t->chi[i];
@@ -239,8 +265,16 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 
 
 		//親のポインタを指定
-		node->parent=pp;
+		node->parent=parent;
 		node_dash->parent=pp;
+		cout<<"parentのポインタ"<<endl;
+		for(int i=0;i<parent->nkey;i++){
+			cout<<parent->key[i]<<endl;
+		}
+		cout<<"ppのポインタ"<<endl;
+		for(int i=0;i<pp->nkey;i++){
+			cout<<pp->key[i]<<endl;
+		}
 
 		return insert_in_parent(parent,key_temp,pp,data);
 
@@ -325,6 +359,7 @@ insert(int key, DATA *data)
 	NODE *leaf;
 
 	if (Root == NULL) {
+		cout<<"呼び出し"<<endl;
 		leaf = alloc_leaf(NULL);
 		Root = leaf;
 	}
@@ -374,6 +409,9 @@ insert(int key, DATA *data)
 		}
 
 		int key_dash=leaf_dash->key[0];
+
+		//dleaf->parent =
+
 
 
 		insert_in_parent(leaf,key_dash,leaf_dash,data);
