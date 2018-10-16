@@ -1,6 +1,10 @@
 #include "bptree.h"
 #include <vector>
 #include <sys/time.h>
+#include <random>
+#include <algorithm>
+
+
 #define dump(x) cerr<<#x<<"="<<x<<endl
 void
 print_tree_core(NODE *n)
@@ -148,10 +152,10 @@ insert_in_node(NODE *p,NODE *c,int key,int index){
 	p->nkey+=1;
 	c->parent=p;
 
-	cout<<"insert_in_node"<<endl;
-	for(int i=0;i<p->nkey;i++){
-		cout<<p->key[i]<<endl;
-	}
+	// cout<<"insert_in_node"<<endl;
+	// for(int i=0;i<p->nkey;i++){
+	// 	cout<<p->key[i]<<endl;
+	// }
 
 	return p;
 }
@@ -178,37 +182,38 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 	}
 
 
-	cout<<"node key"<<endl;
-	for(int i=0;i<node->nkey;i++){
-		cout<<node->key[i]<<endl;
-	}
-	cout<<"node_dash key"<<endl;
-	for(int i=0;i<node_dash->nkey;i++){
-		cout<<node_dash->key[i]<<endl;
-	}
+	// cout<<"node key"<<endl;
+	// for(int i=0;i<node->nkey;i++){
+	// 	cout<<node->key[i]<<endl;
+	// }
+	// cout<<"node_dash key"<<endl;
+	// for(int i=0;i<node_dash->nkey;i++){
+	// 	cout<<node_dash->key[i]<<endl;
+	// }
 
 	NODE *parent=node->parent;
 
-	cout<<"node parent key"<<endl;
-	for(int i=0;i<parent->nkey;i++){
-		cout<<parent->key[i]<<endl;
-	}
+	// cout<<"node parent key"<<endl;
+	// for(int i=0;i<parent->nkey;i++){
+	// 	cout<<parent->key[i]<<endl;
+	// }
 
 	int index=0,i;
 
 	while(parent->key[index]<key && index<parent->nkey)index++;
 
 	if(parent->nkey<N-1){
-		cout<<"parent->nkey<N-1 の"<<endl;
-		for(int i=0;i<parent->nkey;i++){
-			cout<<parent->key[i]<<endl;
-		}
+		// cout<<"parent->nkey<N-1 の"<<endl;
+		// for(int i=0;i<parent->nkey;i++){
+		// 	cout<<parent->key[i]<<endl;
+		// }
 		insert_in_node(parent,node_dash,key,index);
 		return Root;
 	}else{
 		//親がいっぱいなので再帰処理で親ブロックを追加
-
+		// dump(parent->nkey);
 		assert(parent->nkey==N-1);
+
 
 		//copy p to t
 		TEMP *t=new_bptree_temp();
@@ -242,39 +247,74 @@ insert_in_parent(NODE *node, int key, NODE *node_dash, DATA *data){
 		for(i=0;i<mid_pos;i++){
 			parent->key[i]=t->key[i];
 			parent->chi[i]=t->chi[i];
+			// print_tree(t->chi[i]);
+			t->chi[i]->parent=parent;
+
+
+			// dump(t->key[i]);
+
 			parent->nkey++;
 		}
 		assert(parent->nkey==mid_pos);
 		parent->chi[i]=t->chi[i];
+		t->chi[i]->parent=parent;
+
+		// print_tree(t->chi[i]);
+
+
 
 		//let k'' = t[mid_pos]
 		int key_temp=t->key[mid_pos];
-		cout<<"key_tempの値"<<endl;
-		cout<<key_temp<<endl;
+		// cout<<"key_tempの値"<<endl;
+		// cout<<key_temp<<endl;
 		//copy t into p' right
 		for(i=mid_pos+1;i<t->nkey;i++){
 			pp->chi[i-(mid_pos+1)]=t->chi[i];
 			pp->key[i-(mid_pos+1)]=t->key[i];
-			dump(t->key[i]);
+			t->chi[i]->parent=pp;
 
+			// print_tree(t->chi[i]);
+			// dump(t->key[i]);
+			// dump(t->key[i]);
 			pp->nkey++;
 		}
 		assert((pp->nkey+mid_pos+1)==t->nkey);
 		assert(i==4);
 		pp->chi[i-(mid_pos+1)]=t->chi[i];
+		// print_tree(t->chi[i]);
+		t->chi[i]->parent=pp;
 
+
+
+		// cout<<"parent key"<<endl;
+		// for(int i=0;i<parent->nkey;i++){
+		// 	cout<<parent->key[i]<<endl;
+		// }
+		//
+		// cout<<"pp key"<<endl;
+		// for(int i=0;i<pp->nkey;i++){
+		// 	cout<<pp->key[i]<<endl;
+		// }
 
 		//親のポインタを指定
-		node->parent=parent;
-		node_dash->parent=pp;
-		cout<<"parentのポインタ"<<endl;
-		for(int i=0;i<parent->nkey;i++){
-			cout<<parent->key[i]<<endl;
-		}
-		cout<<"ppのポインタ"<<endl;
-		for(int i=0;i<pp->nkey;i++){
-			cout<<pp->key[i]<<endl;
-		}
+
+		// cerr<<"key_tempとkeyのひかく "<<key_temp<<" "<<key<<endl;
+		// if(key_temp<key){
+		// 	node->parent=pp;
+		// 	node_dash->parent=pp;
+		// }else{
+		// 	node->parent=parent;
+		// 	node_dash->parent=parent;
+		// }
+
+		// cout<<"parentのポインタ"<<endl;
+		// for(int i=0;i<parent->nkey;i++){
+		// 	cout<<parent->key[i]<<endl;
+		// }
+		// cout<<"ppのポインタ"<<endl;
+		// for(int i=0;i<pp->nkey;i++){
+		// 	cout<<pp->key[i]<<endl;
+		// }
 
 		return insert_in_parent(parent,key_temp,pp,data);
 
@@ -285,7 +325,7 @@ TEMP *
 insert_in_leaf_temp(TEMP *leaf,int key,DATA *data){
 	int i;
 
-	std::cout<<"key="<<key<<endl;
+	// std::cout<<"key="<<key<<endl;
 
 	if(key<leaf->key[0]){
 		for(int i=leaf->nkey;i>0;i--){
@@ -359,7 +399,7 @@ insert(int key, DATA *data)
 	NODE *leaf;
 
 	if (Root == NULL) {
-		cout<<"呼び出し"<<endl;
+		// cout<<"呼び出し"<<endl;
 		leaf = alloc_leaf(NULL);
 		Root = leaf;
 	}
@@ -453,10 +493,42 @@ main(int argc, char *argv[])
 {
 	init_root();
 
-  while (true) {
-		insert(interactive(), NULL);
-    print_tree(Root);
-  }
+  // while (true) {
+	// 	insert(interactive(), NULL);
+  //   print_tree(Root);
+  // }
+
+	for(int i=1;i<13;i++){
+		insert(i,NULL);
+		print_tree(Root);
+
+	}
+
+	print_tree(Root);
+	init_root();
+
+	for(int i=12;i>0;i--){
+		insert(i,NULL);
+		print_tree(Root);
+
+	}
+	print_tree(Root);
+	init_root();
+
+	vector<int> vec;
+	for(int i=1;i<13;i++)vec.push_back(i);
+	mt19937_64 get_rand_mt;
+	shuffle(vec.begin(),vec.end(),get_rand_mt);
+
+	for(auto itr:vec){
+		// cout<<"挿入キー";
+		//  dump(itr);
+		insert(itr,NULL);
+		print_tree(Root);
+	}
+	print_tree(Root);
+
+
 
 	return 0;
 }
